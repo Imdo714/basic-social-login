@@ -1,0 +1,30 @@
+package com.basic.api.user.domain.model.dto.request.kakao;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.ToString;
+
+@ToString
+@Getter
+@AllArgsConstructor
+public class AccessTokenDto {
+
+    @JsonProperty("access_token")
+    private String accessToken;
+
+    @JsonProperty("token_type")
+    private String tokenType;
+
+    @JsonProperty("refresh_token")
+    private String refreshToken;
+
+    @JsonProperty("expires_in")
+    private Long expiresIn;
+
+    @JsonProperty("scope")
+    private String scope;
+
+    @JsonProperty("refresh_token_expires_in")
+    private Long refreshTokenExpiresIn;
+}

@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: basic-security
+
+  jwt:
+    secret: "${JWT_SECRET}"
+    expiration:
+      access: "${JWT_VALIDITY_SECONDS}"
+    header: Authorization
