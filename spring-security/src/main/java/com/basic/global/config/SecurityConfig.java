@@ -9,18 +9,18 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.access.channel.ChannelProcessingFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final CorsConfig corsConfig;
+    private final CorsConfigurationSource corsConfigurationSource;
     private final JwtProvider jwtProvider;
 
-    public SecurityConfig(CorsConfig corsConfig, JwtProvider jwtProvider) {
-        this.corsConfig = corsConfig;
+    public SecurityConfig(CorsConfigurationSource corsConfigurationSource, JwtProvider jwtProvider) {
+        this.corsConfigurationSource = corsConfigurationSource;
         this.jwtProvider = jwtProvider;
     }
 
@@ -34,6 +34,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
 
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // GET 요청은 로그인 없이도 접근 가능
@@ -46,7 +47,6 @@ public class SecurityConfig {
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint())
                 )
 
-                .addFilterBefore(corsConfig.corsFilter(), ChannelProcessingFilter.class) // ChannelProcessingFilter 실행 전에 CORS 부터 검증
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         ;
         return http.build();

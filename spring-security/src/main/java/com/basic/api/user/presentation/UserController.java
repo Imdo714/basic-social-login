@@ -1,7 +1,7 @@
 package com.basic.api.user.presentation;
 
 import com.basic.api.ApiResponse;
-import com.basic.api.user.application.UserUseCase;
+import com.basic.api.user.application.socialLogin.apple.AppleSocialService;
 import com.basic.api.user.application.socialLogin.kakao.KakaoSocialLoginService;
 import com.basic.api.user.domain.model.custom.CustomUserDetails;
 import com.basic.api.user.domain.model.dto.response.LoginResponse;
@@ -20,8 +20,8 @@ import java.util.Map;
 @RestController
 public class UserController {
 
-    private final UserUseCase userUseCase;
     private final KakaoSocialLoginService kakaoSocialLoginService;
+    private final AppleSocialService appleSocialService;;
 
     @GetMapping("/index")
     public ApiResponse<String> index() {
@@ -43,9 +43,9 @@ public class UserController {
         return ApiResponse.ok(kakaoSocialLoginService.kakaoSocialLogin(code));
     }
 
-//    @PostMapping("/auth/apple")
-//    public ApiResponse<LoginResponse> appleLogin(@RequestBody Map<String,String> body) {
-//        String identityToken = body.get("identityToken");
-//        return ApiResponse.ok(appleService.loginByIdentityToken(identityToken));
-//    }
+    @PostMapping("/auth/apple")
+    public ApiResponse<LoginResponse> appleLogin(@RequestBody Map<String,String> body) {
+        String identityToken = body.get("identityToken");
+        return ApiResponse.ok(appleSocialService.appleSocialLogin(identityToken));
+    }
 }
