@@ -14,14 +14,16 @@ public class LoginResponse {
     private String name;
     private String profileImageUrl;
     private String accessToken;
+    private String refreshToken;
 
-    public static LoginResponse of(User user, String accessToken) {
+    public static LoginResponse of(User user, String accessToken, String refreshToken) {
         return LoginResponse.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .profileImageUrl(user.getProfileImageUrl())
                 .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 }

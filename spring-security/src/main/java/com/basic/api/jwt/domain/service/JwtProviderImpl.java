@@ -1,11 +1,9 @@
-package com.basic.api.jwt;
+package com.basic.api.jwt.domain.service;
 
 import com.basic.api.user.domain.model.custom.CustomUserDetails;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,22 +12,36 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Component
 public class JwtProviderImpl implements JwtProvider {
 
     @Value("${JWT_SECRET}")
     private String secretKey;
 
-    @Value("${JWT_VALIDITY_SECONDS}")
-    private long validityInMilliseconds;
+    @Value("${JWT_ACCESS_EXPIRATION}")
+    private long accessTokenValidity;
+
+    @Value("${JWT_REFRESH_EXPIRATION}")
+    private long refreshTokenValidity;
 
     @Override
-    public String createToken(Long userId, String userName) { // AccessToken 생성 메서드
+    public String createAccessToken(Long userId, String userName) {
         Claims claims = Jwts.claims().setSubject(userName);
         claims.put("userId", userId);
+        return createToken(claims, accessTokenValidity);
+    }
 
+    @Override
+    public String createRefreshToken(Long userId, String userName) {
+        Claims claims = Jwts.claims().setSubject(userName);
+        claims.put("userId", userId);
+        return createToken(claims, refreshTokenValidity);
+    }
+
+    private String createToken(Claims claims, long validity) {
         Date now = new Date();
-        Date expiry = new Date(now.getTime() + validityInMilliseconds);
+        Date expiry = new Date(now.getTime() + validity);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -46,14 +58,15 @@ public class JwtProviderImpl implements JwtProvider {
     }
 
     @Override
-    public boolean validateToken(String token) { // 토큰 서명값 검증
+    public void validateToken(String token) {
         try {
             Jwts.parser()
                     .setSigningKey(secretKey)
                     .parseClaimsJws(token);
-            return true;
+        } catch (ExpiredJwtException e) {
+            throw e;
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new JwtException("유효하지 않은 토큰입니다.");
         }
     }
 
@@ -70,6 +83,17 @@ public class JwtProviderImpl implements JwtProvider {
         CustomUserDetails principal = new CustomUserDetails(userId, username);
 
         return new UsernamePasswordAuthenticationToken(principal, "", List.of());
+    }
+
+    @Override
+    public Long getExpiration(String token) {
+        // 토큰의 만료 시간 - 현재 시간 = 남은 시간
+        Date expiration = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody()
+                .getExpiration();
+        return expiration.getTime() - new Date().getTime();
     }
 
 }

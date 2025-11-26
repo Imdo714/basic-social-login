@@ -1,6 +1,6 @@
 package com.basic.api.user.application.socialLogin.kakao;
 
-import com.basic.api.jwt.JwtProvider;
+import com.basic.api.jwt.application.JwtTokenUseCase;
 import com.basic.api.user.domain.model.dto.request.kakao.AccessTokenDto;
 import com.basic.api.user.domain.model.dto.request.kakao.KakaoUserDto;
 import com.basic.api.user.domain.model.dto.request.kakao.KakaoUserResponse;
@@ -22,7 +22,7 @@ import org.springframework.web.client.RestClient;
 public class KakaoSocialLoginServiceImpl implements KakaoSocialLoginService {
 
     private final UserRepository userRepository;
-    private final JwtProvider jwtProvider;
+    private final JwtTokenUseCase jwtTokenUseCase;
 
     @Value("${KAKAO_CLIENT_ID}")
     private String client_id;
@@ -39,7 +39,10 @@ public class KakaoSocialLoginServiceImpl implements KakaoSocialLoginService {
         log.info("userInfo = {}", userInfo);
 
         User user = registerOrLogin(userInfo);
-        return LoginResponse.of(user, jwtProvider.createToken(user.getId(), user.getName()));
+        String refreshToken = jwtTokenUseCase.createAndSaveRefreshToken(user.getId(), user.getName());
+        String accessToken = jwtTokenUseCase.createAccessToken(user.getId(), user.getName());
+
+        return LoginResponse.of(user, accessToken, refreshToken);
     }
 
     private AccessTokenDto getKakaoAccessToken(String code) {

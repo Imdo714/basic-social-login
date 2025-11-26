@@ -1,7 +1,7 @@
 package com.basic.global.jwt.filter;
 
 import com.basic.api.ApiResponse;
-import com.basic.api.jwt.JwtProvider;
+import com.basic.api.jwt.domain.service.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -24,7 +24,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProvider jwtProvider;
 
     private final List<String> excludedUrls = List.of( // 인증 제외 URL
-            "/index", "/kakao/login"
+            "/index", "/kakao/login", "/refresh"
     );
 
     public JwtAuthenticationFilter(JwtProvider jwtProvider) {
@@ -55,19 +55,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     // JWT 토큰이 있을 경우 인증 처리
     private void authenticateIfTokenExists(HttpServletRequest request) {
-        String token = jwtProvider.extractBearerToken(request); // Token 추춣
-
+        String token = jwtProvider.extractBearerToken(request);
         log.info("token = {}", token);
 
-        if (token == null) return; // token 없으면 인증 안 하고 패스, 먄약 로그인 해야 하는 URL이면 Security가 잡아줌
+        if (token == null) return;
 
-        if (!jwtProvider.validateToken(token)) {
-            throw new JwtException("유효하지 않은 JWT 토큰입니다.");
-        }
+        jwtProvider.validateToken(token);
 
         Authentication auth = jwtProvider.getAuthentication(token);
         log.info("Authentication = {}", auth);
-
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 

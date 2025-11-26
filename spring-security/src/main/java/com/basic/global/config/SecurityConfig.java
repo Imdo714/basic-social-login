@@ -1,6 +1,6 @@
 package com.basic.global.config;
 
-import com.basic.api.jwt.JwtProvider;
+import com.basic.api.jwt.domain.service.JwtProvider;
 import com.basic.global.exception.authentication.CustomAuthenticationEntryPoint;
 import com.basic.global.jwt.filter.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +38,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // GET 요청은 로그인 없이도 접근 가능
-                        .requestMatchers("/index", "/kakao/login").permitAll()
+                        .requestMatchers("/index", "/kakao/login", "/refresh").permitAll()
                         .anyRequest().authenticated()
                 )
 

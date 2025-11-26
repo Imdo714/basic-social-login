@@ -1,6 +1,7 @@
 package com.basic.api.user.presentation;
 
 import com.basic.api.ApiResponse;
+import com.basic.api.user.application.UserUseCase;
 import com.basic.api.user.application.socialLogin.apple.AppleSocialService;
 import com.basic.api.user.application.socialLogin.kakao.KakaoSocialLoginService;
 import com.basic.api.user.domain.model.custom.CustomUserDetails;
@@ -21,7 +22,8 @@ import java.util.Map;
 public class UserController {
 
     private final KakaoSocialLoginService kakaoSocialLoginService;
-    private final AppleSocialService appleSocialService;;
+    private final AppleSocialService appleSocialService;
+    private final UserUseCase userUseCase;
 
     @GetMapping("/index")
     public ApiResponse<String> index() {
