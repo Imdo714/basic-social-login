@@ -7,4 +7,5 @@ import java.util.Optional;
 public interface RefreshTokenRepository {
     RefreshToken save(RefreshToken refreshToken);
     Optional<RefreshToken> findByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

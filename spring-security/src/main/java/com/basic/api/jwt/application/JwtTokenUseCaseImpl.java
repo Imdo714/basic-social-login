@@ -10,6 +10,7 @@ import com.basic.global.exception.handelException.jwtException.JwtInvalidExcepti
 import com.basic.global.exception.handelException.jwtException.RefreshTokenNotFoundException;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -60,6 +61,22 @@ public class JwtTokenUseCaseImpl implements JwtTokenUseCase {
         return new ReissueTokenResponse(jwtProvider.createAccessToken(userDetails.getUserId(), userDetails.getUsername()));
     }
 
+    @Override
+    public String logout(Long userId, HttpServletRequest request) {
+        String accessToken = extractAccessToken(request);
+        Long expiration = jwtProvider.getExpiration(accessToken);
+
+        // TODO : Redis에 저장한다고 가정 ~~~
+
+        // DB에 있는 RefreshToken 삭제
+        refreshTokenRepository.findByUserId(userId)
+                .ifPresentOrElse(
+                        rf -> refreshTokenRepository.deleteByUserId(userId), // 토큰이 있으면 삭제
+                        () -> { throw new RefreshTokenNotFoundException("로그아웃 된 사용자입니다. (DB에 토큰 없음)"); } // 토큰이 없다면 예외
+                );
+        return "Logout Success!!";
+    }
+
     private void validateRefreshToken(String token) {
         try {
             jwtProvider.validateToken(token);
@@ -68,6 +85,14 @@ public class JwtTokenUseCaseImpl implements JwtTokenUseCase {
         } catch (JwtException e) {
             throw new JwtInvalidException("유효하지 않은 Refresh Token입니다.");
         }
+    }
+
+    private String extractAccessToken(HttpServletRequest request) {
+        String token = jwtProvider.extractBearerToken(request);
+        if (token == null) {
+            throw new RefreshTokenNotFoundException("헤더 값에 토큰이 없습니다.");
+        }
+        return token;
     }
 
 }

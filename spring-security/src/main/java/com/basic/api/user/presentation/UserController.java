@@ -1,11 +1,13 @@
 package com.basic.api.user.presentation;
 
 import com.basic.api.ApiResponse;
+import com.basic.api.jwt.application.JwtTokenUseCase;
 import com.basic.api.user.application.UserUseCase;
 import com.basic.api.user.application.socialLogin.apple.AppleSocialService;
 import com.basic.api.user.application.socialLogin.kakao.KakaoSocialLoginService;
 import com.basic.api.user.domain.model.custom.CustomUserDetails;
 import com.basic.api.user.domain.model.dto.response.LoginResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +26,7 @@ public class UserController {
     private final KakaoSocialLoginService kakaoSocialLoginService;
     private final AppleSocialService appleSocialService;
     private final UserUseCase userUseCase;
+    private final JwtTokenUseCase jwtTokenUseCase;
 
     @GetMapping("/index")
     public ApiResponse<String> index() {
@@ -50,4 +53,12 @@ public class UserController {
         String identityToken = body.get("identityToken");
         return ApiResponse.ok(appleSocialService.appleSocialLogin(identityToken));
     }
+
+    @PostMapping("/logout2")
+    public ApiResponse<String> logout(@AuthenticationPrincipal CustomUserDetails user,
+            HttpServletRequest request
+    ) {
+        return ApiResponse.ok(jwtTokenUseCase.logout(user.getUserId(), request));
+    }
+
 }
