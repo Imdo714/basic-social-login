@@ -38,7 +38,7 @@ public class KakaoSocialLoginServiceImpl implements KakaoSocialLoginService {
         KakaoUserDto userInfo = getUserInfoFromKakao(kakaoAccessToken.getAccessToken());
         log.info("userInfo = {}", userInfo);
 
-        User user = registerOrLogin(userInfo);
+        User user = registerOrLogin(userInfo, kakaoAccessToken.getRefreshToken());
         String refreshToken = jwtTokenUseCase.createAndSaveRefreshToken(user.getId(), user.getName());
         String accessToken = jwtTokenUseCase.createAccessToken(user.getId(), user.getName());
 
@@ -82,10 +82,16 @@ public class KakaoSocialLoginServiceImpl implements KakaoSocialLoginService {
         return KakaoUserDto.of(response.getKakaoAccount(), response.getKakaoAccount().getProfile());
     }
 
-    private User registerOrLogin(KakaoUserDto kakaoUser) {
+    private User registerOrLogin(KakaoUserDto kakaoUser, String socialRefreshToken) {
         return userRepository.findByEmail(kakaoUser.getEmail())
+                .map(user -> {
+                    // user가 있으면 RefreshToken 업데이트
+                    user.updateSocialRefreshToken(socialRefreshToken);
+                    return user;
+                })
                 .orElseGet(() -> {
-                    User newUser = User.createKakaoUserBuilder(kakaoUser);
+                    // user가 없다면 DB에 저장
+                    User newUser = User.createKakaoUserBuilder(kakaoUser, socialRefreshToken);
                     return userRepository.save(newUser);
                 });
     }

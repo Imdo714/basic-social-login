@@ -56,14 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // JWT 토큰이 있을 경우 인증 처리
     private void authenticateIfTokenExists(HttpServletRequest request) {
         String token = jwtProvider.extractBearerToken(request);
-        log.info("token = {}", token);
-
         if (token == null) return;
 
         jwtProvider.validateToken(token);
-
         Authentication auth = jwtProvider.getAuthentication(token);
-        log.info("Authentication = {}", auth);
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 

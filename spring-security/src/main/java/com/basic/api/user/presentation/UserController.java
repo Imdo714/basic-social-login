@@ -7,14 +7,12 @@ import com.basic.api.user.application.socialLogin.apple.AppleSocialService;
 import com.basic.api.user.application.socialLogin.kakao.KakaoSocialLoginService;
 import com.basic.api.user.domain.model.custom.CustomUserDetails;
 import com.basic.api.user.domain.model.dto.response.LoginResponse;
+import com.basic.api.user.domain.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -59,6 +57,12 @@ public class UserController {
             HttpServletRequest request
     ) {
         return ApiResponse.ok(jwtTokenUseCase.logout(user.getUserId(), request));
+    }
+
+    @GetMapping("/user/{userId}")
+    public ApiResponse<User> index(@PathVariable Long userId) {
+
+        return ApiResponse.ok(userUseCase.getUserInfo(userId));
     }
 
 }
