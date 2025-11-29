@@ -6,6 +6,7 @@ import com.basic.api.user.application.UserUseCase;
 import com.basic.api.user.application.socialLogin.apple.AppleSocialService;
 import com.basic.api.user.application.socialLogin.kakao.KakaoSocialLoginService;
 import com.basic.api.user.domain.model.custom.CustomUserDetails;
+import com.basic.api.user.domain.model.dto.request.AuthCodeDto;
 import com.basic.api.user.domain.model.dto.response.LoginResponse;
 import com.basic.api.user.domain.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,18 +41,13 @@ public class UserController {
     }
 
     @PostMapping("/kakao/login")
-    public ApiResponse<LoginResponse> aaaLogin(@RequestBody Map<String, String> payload) {
-        String code = payload.get("code");
-        log.info("code = {}", code);
-
-        return ApiResponse.ok(kakaoSocialLoginService.kakaoSocialLogin(code));
+    public ApiResponse<LoginResponse> aaaLogin(@RequestBody AuthCodeDto payload) {
+        return ApiResponse.ok(kakaoSocialLoginService.kakaoSocialLogin(payload.getCode()));
     }
 
     @PostMapping("/apple/login")
-    public ApiResponse<LoginResponse> appleLogin(@RequestBody Map<String, String> payload) {
-        String code = payload.get("code");
-        log.info("Apple Code: {}", code);
-        return ApiResponse.ok(appleSocialService.appleSocialLogin(code));
+    public ApiResponse<LoginResponse> appleLogin(@RequestBody AuthCodeDto payload) {
+        return ApiResponse.ok(appleSocialService.appleSocialLogin(payload.getCode()));
     }
 
     @PostMapping("/withdraw")

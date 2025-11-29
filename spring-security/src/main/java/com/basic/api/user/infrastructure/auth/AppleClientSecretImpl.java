@@ -1,7 +1,7 @@
-package com.basic.api.user.infrastructure.AppleClient;
+package com.basic.api.user.infrastructure.auth;
 
 import com.basic.api.user.domain.model.dto.request.apple.AppleTokenResponse;
-import com.basic.api.user.domain.service.AppleClientSecret;
+import com.basic.api.user.domain.service.auth.AppleClientSecret;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwsHeader;
 import io.jsonwebtoken.Jwts;
@@ -104,10 +104,10 @@ public class AppleClientSecretImpl implements AppleClientSecret {
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-        params.add("client_id", clientId); // 앱의 Bundle ID (Properties에서 가져온 값)
-        params.add("client_secret", clientSecret); // 생성한 JWT
-        params.add("token", refreshToken); // ★ DB에 저장했던 Refresh Token
-        params.add("token_type_hint", "refresh_token"); // "이거 리프레시 토큰이야"라고 알려줌
+        params.add("client_id", clientId);
+        params.add("client_secret", clientSecret);
+        params.add("token", refreshToken);
+        params.add("token_type_hint", "refresh_token");
 
         HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(params, headers);
 

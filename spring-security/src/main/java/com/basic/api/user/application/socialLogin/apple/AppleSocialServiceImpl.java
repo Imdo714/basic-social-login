@@ -5,7 +5,7 @@ import com.basic.api.user.domain.model.dto.request.apple.AppleTokenResponse;
 import com.basic.api.user.domain.model.dto.response.LoginResponse;
 import com.basic.api.user.domain.model.entity.User;
 import com.basic.api.user.domain.repository.UserRepository;
-import com.basic.api.user.domain.service.AppleClientSecret;
+import com.basic.api.user.domain.service.auth.AppleClientSecret;
 import com.basic.global.exception.handelException.jwtException.RefreshTokenNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.basic.api.user.domain.service;
+package com.basic.api.user.domain.service.auth;
 
 import com.basic.api.user.domain.model.dto.request.apple.AppleTokenResponse;
 
