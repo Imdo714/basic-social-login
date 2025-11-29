@@ -4,4 +4,6 @@ import com.basic.api.user.domain.model.dto.response.LoginResponse;
 
 public interface AppleSocialService {
     LoginResponse appleSocialLogin(String identityToken);
+
+    void withdraw(Long userId);
 }

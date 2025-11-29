@@ -38,7 +38,7 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // GET 요청은 로그인 없이도 접근 가능
-                        .requestMatchers("/index", "/kakao/login", "/refresh").permitAll()
+                        .requestMatchers("/index", "/kakao/login", "/refresh", "/apple/login").permitAll()
                         .anyRequest().authenticated()
                 )
 

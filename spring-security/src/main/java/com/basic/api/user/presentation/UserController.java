@@ -9,6 +9,7 @@ import com.basic.api.user.domain.model.custom.CustomUserDetails;
 import com.basic.api.user.domain.model.dto.response.LoginResponse;
 import com.basic.api.user.domain.model.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,10 +47,16 @@ public class UserController {
         return ApiResponse.ok(kakaoSocialLoginService.kakaoSocialLogin(code));
     }
 
-    @PostMapping("/auth/apple")
-    public ApiResponse<LoginResponse> appleLogin(@RequestBody Map<String,String> body) {
-        String identityToken = body.get("identityToken");
-        return ApiResponse.ok(appleSocialService.appleSocialLogin(identityToken));
+    @PostMapping("/apple/login")
+    public ApiResponse<LoginResponse> appleLogin(@RequestBody Map<String, String> payload) {
+        String code = payload.get("code");
+        log.info("Apple Code: {}", code);
+        return ApiResponse.ok(appleSocialService.appleSocialLogin(code));
+    }
+
+    @PostMapping("/withdraw")
+    public void withdraw(@AuthenticationPrincipal CustomUserDetails user) {
+        appleSocialService.withdraw(user.getUserId());
     }
 
     @PostMapping("/logout2")

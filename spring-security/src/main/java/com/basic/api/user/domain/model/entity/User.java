@@ -33,6 +33,16 @@ public class User {
                 .build();
     }
 
+    public static User createAppleUserBuilder(String appleUserId, String email, String appleRefreshToken) {
+        return User.builder()
+                .email(email)
+                .provider(Provider.APPLE)
+                .providerId(appleUserId)
+                .socialRefreshToken(appleRefreshToken)
+                .status(UserStatus.ACTIVE)
+                .build();
+    }
+
     public void updateSocialRefreshToken(String newToken) {
         if (newToken != null && !newToken.isBlank()) {
             this.socialRefreshToken = newToken;

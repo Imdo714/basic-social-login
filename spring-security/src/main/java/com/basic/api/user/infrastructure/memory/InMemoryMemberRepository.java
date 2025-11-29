@@ -34,4 +34,11 @@ public class InMemoryMemberRepository implements UserRepository {
     public Optional<User> findById(Long id) {
         return Optional.ofNullable(data.get(id));
     }
+
+    @Override
+    public Optional<User> findByProviderId(String providerId) {
+        return data.values().stream()
+                .filter(user -> user.getProviderId().equals(providerId))
+                .findFirst();
+    }
 }
