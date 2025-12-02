@@ -1,0 +1,1 @@
+# 🏗️ 계층별 역할 및 책임 가이드 (Architecture Guidelines)
